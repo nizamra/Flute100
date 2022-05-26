@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 
+import 'catCard.dart';
+import 'dattt.dart';
+
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -49,6 +53,28 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  List<Itemss>? _itt;
+  bool _isloading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getcattss();
+  }
+
+  Future<void> getcattss() async {
+    _itt = await Dattt.getCategories();
+    setState(() {
+      _isloading = false;
+    });
+    // for( var i = 0 ; i <= 7; i++ ) {
+    //   print(_itt![i].name);
+    // }
+    // print(_itt);
+  }
+
+  // final _dattt = Dattt();
+
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -56,18 +82,20 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter=_counter+3;
+      _counter = _counter + 3;
     });
   }
+
   void _zeroingCounter() {
     setState(() {
       _counter = 0;
     });
   }
-    void _minCounter() {
-      setState(() {
-        _counter=_counter-1;
-      });
+
+  void _minCounter() {
+    setState(() {
+      _counter = _counter - 1;
+    });
   }
 
   @override
@@ -78,85 +106,117 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
+    // https://app.ecwid.com/api/v3/62626158/categories?token=public_riFWgdSARCbPzaBeRRAkbdBSmnBBP1ye
     return Scaffold(
-      backgroundColor: Colors.white24,
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
 
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children:[
-            const Expanded(
-              child: Image(
-                image: AssetImage('images/girl.webp'),
-            ),
-            ),
-            ElevatedButton(
-              onPressed: (){
-                print("e button pressed");
-              }, child: Text('E button'),
-            ),
-            const CircleAvatar(
-              radius: 65,
-                backgroundImage: AssetImage('images/intro-1587389462.webp'),
-            ),
-            const Text(
-              'You pushed button this many times HAHA:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline3,
-            ),
-          ],
+        backgroundColor: Colors.white24,
+        appBar: AppBar(
+          // Here we take the value from the MyHomePage object that was created by
+          // the App.build method, and use it to set our appbar title.
+          title: Text(widget.title),
         ),
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ),
-        floatingActionButton: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+        body: SingleChildScrollView(
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          child: Column(
+            // Column is also a layout widget. It takes a list of children and
+            // arranges them vertically. By default, it sizes itself to fit its
+            // children horizontally, and tries to be as tall as its parent.
+
+            // Invoke "debug painting" (press "p" in the console, choose the
+            // "Toggle Debug Paint" action from the Flutter Inspector in Android
+            // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+            // to see the wireframe for each widget.
+
+            // Column has various properties to control how it sizes itself and
+            // how it positions its children. Here we use mainAxisAlignment to
+            // center the children vertically; the main axis here is the vertical
+            // axis because Columns are vertical (the cross axis would be
+            // horizontal).
+            verticalDirection: VerticalDirection.down,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              FloatingActionButton(
-                onPressed: _incrementCounter,
-                tooltip: 'Increment',
-                child: const Icon(Icons.add),
-                heroTag: "fab1",
-              ),
-              FloatingActionButton(
-                onPressed: _zeroingCounter,
-                tooltip: 'zer',
-                child: const Icon(Icons.restore),
-                heroTag: "fab2",
-              ),
-              FloatingActionButton(
-                onPressed: _minCounter,
-                tooltip: 'min',
-                child: const Icon(Icons.arrow_downward),
-                heroTag: "minmin2",
-              ),
-            ]
-        ) // This trailing comma makes auto-formatting nicer for build methods.
-    );
+              _isloading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView.builder(
+
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+
+                      // itemCount: 8,
+                      itemCount: _itt?.length,
+                      itemBuilder: (context, index) {
+                        return CatCard(
+                            id: _itt![index].id == null ? _itt![index].id : 55555,
+                            name: _itt![index].name,
+                            thumbnailUrl: _itt![index].thumbnailUrl);
+                      },
+                    ),
+              // const Image(
+              //   image: AssetImage('images/girl.webp'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: (){
+              //     print("e button pressed");
+              //   }, child: Text('E button'),
+              // ),
+              // const CircleAvatar(
+              //   radius: 65,
+              //   backgroundImage: AssetImage('images/intro-1587389462.webp'),
+              // ),
+              // const Text(
+              //
+              //   'You pushed button this many times HAHA:',
+              // ),
+              // Text(
+              //
+              //   '$_counter',
+              //   style: Theme.of(context).textTheme.headline3,
+              // ),
+            ],
+          ),
+        ),
+        // floatingActionButton: FloatingActionButton(
+        //   onPressed: _incrementCounter,
+        //   tooltip: 'Increment',
+        //   child: const Icon(Icons.add),
+        // ),
+        floatingActionButton:
+            Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          FloatingActionButton(
+            onPressed: _incrementCounter,
+            tooltip: 'Increment',
+            child: const Icon(Icons.add),
+            heroTag: "fab1",
+          ),
+          FloatingActionButton(
+            onPressed: _zeroingCounter,
+            tooltip: 'zer',
+            child: const Icon(Icons.restore),
+            heroTag: "fab2",
+          ),
+          FloatingActionButton(
+            onPressed: _minCounter,
+            tooltip: 'min',
+            child: const Icon(Icons.arrow_downward),
+            heroTag: "minmin2",
+          ),
+          // FloatingActionButton(
+          //   onPressed: getAllCats,
+          //   tooltip: 'cat cat',
+          //   child: const Icon(Icons.http),
+          //   heroTag: "search",
+          // ),
+        ]) // This trailing comma makes auto-formatting nicer for build methods.
+        );
   }
+
+// void getAllCats() async {
+//   // _dattt.getCategories();
+//   final allItems = await _dattt.getCategories();
+//   print(allItems.items.id);
+//   print(allItems.items.name);
+// }
 }
